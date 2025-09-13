@@ -36,10 +36,15 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'aws-jenkins-credentials', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
                     sh '''
-                        aws apprunner create-service --cli-input-json file://app-runner.json \
-                        --service-name devops-task-$IMAGE_TAG --region $AWS_DEFAULT_REGION || \
-                        aws apprunner update-service --service-arn $(aws apprunner list-services --region $AWS_DEFAULT_REGION --query "ServiceSummaryList[?ServiceName=='devops-task-$IMAGE_TAG'].ServiceArn" --output text) \
-                        --source-configuration ImageRepository={ImageIdentifier=$ECR_URI:$IMAGE_TAG,ImageRepositoryType=ECR}
+                        aws apprunner create-service \
+                          --service-name devops-task-service \
+                          --source-configuration "ImageRepository={ImageIdentifier=$ECR_URI:$IMAGE_TAG,ImageRepositoryType=ECR,ImageConfiguration={Port=3000}}" \
+                          --instance-configuration Cpu=256,Memory=512 \
+                          --region $AWS_DEFAULT_REGION || \
+                        aws apprunner update-service \
+                          --service-arn $(aws apprunner list-services --region $AWS_DEFAULT_REGION --query "ServiceSummaryList[?ServiceName==\''devops-task-service\''].ServiceArn" --output text) \
+                          --source-configuration "ImageRepository={ImageIdentifier=$ECR_URI:$IMAGE_TAG,ImageRepositoryType=ECR,ImageConfiguration={Port=3000}}" \
+                          --region $AWS_DEFAULT_REGION
                     '''
                 }
             }
