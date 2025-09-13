@@ -1,0 +1,16 @@
+{
+  "SourceConfiguration": {
+    "ImageRepository": {
+      "ImageIdentifier": "023231074437.dkr.ecr.us-east-1.amazonaws.com/devops-task:1",
+      "ImageRepositoryType": "ECR",
+      "ImageConfiguration": {
+        "Port": "3000"
+      }
+    },
+    "AutoDeploymentsEnabled": true
+  },
+  "InstanceConfiguration": {
+    "Cpu": "256",
+    "Memory": "512"
+  }
+}
